@@ -1,0 +1,1 @@
+sunucu kiralamadığında buradakileri github üzerinden yayınla
