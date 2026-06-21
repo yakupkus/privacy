@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Hesap Silme Talebi - Çılgın Yılan Oyunu / Crazy Snake Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0F0F23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            color: #4ECDC4;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4ECDC4;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4ECDC4;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .warning {
+            background: rgba(255, 87, 34, 0.1);
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .warning h3 {
+            color: #FF5722;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .warning p {
+            color: #ffccbc;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .warning ul {
+            color: #ffccbc;
+            font-size: 13px;
+            margin-left: 20px;
+            margin-top: 8px;
+        }
+        .warning li {
+            margin-bottom: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.3);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .info {
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info p {
+            color: #80cbc4;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 12px;
+        }
+        .footer a {
+            color: #4ECDC4;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🗑️ Hesap Silme Talebi</h1>
+    <p class="subtitle">Çılgın Yılan Oyunu / Crazy Snake Game</p>
+
+    <div class="warning">
+        <h3>⚠️ Önemli Uyarı</h3>
+        <p>Hesabınızı silmeden önce lütfen aşağıdaki bilgileri okuyun:</p>
+        <ul>
+            <li>Hesabınızı sildiğinizde <strong>tüm oyun verileriniz kalıcı olarak silinir</strong></li>
+            <li>Skorlarınız, coinleriniz, açık tasarımlarınız geri yüklenemez</li>
+            <li>Liderlik tablosundaki sıralamanız silinir</li>
+            <li>Bu işlem <strong>geri alınamaz</strong></li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <p>
+            <strong>💡 Alternatif:</strong> Sadece çıkış yapmak istiyorsanız, oyun içinde 
+            Ayarlar → Çıkış seçeneğini kullanabilirsiniz. Bu durumda verileriniz korunur.
+        </p>
+    </div>
+
+    <form action="https://formsubmit.co/yakupkus.38@gmail.com" method="POST">
+        <!-- FormSubmit için gerekli gizli alanlar -->
+        <input type="hidden" name="_subject" value="Hesap Silme Talebi - Çılgın Yılan Oyunu">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+
+        <div class="form-group">
+            <label for="email">E-posta Adresi *</label>
+            <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                placeholder="Google hesabınızın e-posta adresi"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="username">Kullanıcı Adı (Oyun içindeki adınız)</label>
+            <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                placeholder="Oyun içindeki kullanıcı adınız"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="reason">Silme Nedeni (İsteğe Bağlı)</label>
+            <textarea 
+                id="reason" 
+                name="reason" 
+                placeholder="Neden hesabınızı silmek istiyorsunuz? (Geri bildiriminiz bizim için değerli)"
+            ></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmation">
+                <input 
+                    type="checkbox" 
+                    id="confirmation" 
+                    name="confirmation" 
+                    required 
+                    style="width: auto; margin-right: 10px;"
+                >
+                Hesabımı silmek istediğimi ve tüm verilerimin kalıcı olarak silineceğini anladım.
+            </label>
+        </div>
+
+        <button type="submit">🗑️ Hesabımı Sil</button>
+    </form>
+
+    <div class="footer">
+        <p>
+            Bu talep işleme alındığında e-posta ile bilgilendirileceksiniz.<br>
+            İşlem süresi: 7-14 iş günü
+        </p>
+        <p style="margin-top: 10px;">
+            <a href="privacy_policy.html" target="_blank">Gizlilik Politikası</a> | 
+            MUNYSA © 2026
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
