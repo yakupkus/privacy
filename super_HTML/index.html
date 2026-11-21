@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10131b">
+  <title>Yerel HTML Görüntüleyici</title>
+  <style>
+    :root{color-scheme:dark;--bg:#10131b;--panel:#191e29;--line:#2a3242;--text:#f2f5fb;--muted:#a7b0c2;--accent:#a8e66b;--danger:#ffcf83}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 20% 0,#202b36 0,transparent 45%),var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    main{max-width:960px;margin:auto;padding:clamp(20px,5vw,56px) 18px 36px}.eyebrow{color:var(--accent);font-size:12px;font-weight:750;letter-spacing:.14em;text-transform:uppercase}
+    h1{font-size:clamp(30px,7vw,48px);line-height:1.05;letter-spacing:-.04em;margin:12px 0}p{color:var(--muted);margin:8px 0}.intro{max-width:680px;font-size:17px}
+    .card{background:color-mix(in srgb,var(--panel) 93%,transparent);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,4vw,28px);margin-top:26px;box-shadow:0 18px 60px #0003}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}.button{min-height:48px;padding:12px 18px;border:1px solid var(--line);border-radius:12px;background:#222a37;color:var(--text);font:inherit;font-weight:700;cursor:pointer}.button.primary{background:var(--accent);color:#17200e;border-color:var(--accent)}.button:focus-visible,select:focus-visible{outline:3px solid #fff;outline-offset:3px}
+    input[type=file]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;clip-path:inset(50%)}
+    .hint{font-size:13px;margin-top:12px}.status{margin-top:18px;color:var(--accent);font-size:14px;min-height:22px}.choose-page{display:none;margin-top:20px}label.select-label{display:block;font-weight:700;margin-bottom:8px}select{width:100%;min-height:48px;padding:10px 12px;color:var(--text);background:#111620;border:1px solid var(--line);border-radius:10px;font:inherit}
+    .open{margin-top:12px}.preview-wrap{display:none;margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}.preview-bar{padding:9px 13px;background:#202633;color:var(--muted);font-size:13px}.preview{display:block;width:100%;height:min(72vh,780px);min-height:420px;border:0;background:white}
+    .note{font-size:13px}.note strong{color:var(--danger)}.footer{margin-top:20px;font-size:12px;color:#808a9d}
+    @media(max-width:540px){.actions{display:grid}.button{width:100%}.preview{min-height:360px;height:68vh}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Cihazınızda çalışır · Dosyalar yüklenmez</div>
+  <h1>Yerel HTML Görüntüleyici</h1>
+  <p class="intro">Telefonunuzdaki klasörden bir HTML sayfası seçin. Sayfa ve seçtiğiniz klasördeki resim, stil ve betik dosyaları bu tarayıcı oturumunda görüntülenir.</p>
+
+  <section class="card" aria-labelledby="pick-title">
+    <h2 id="pick-title" style="font-size:20px;margin:0">Bir klasör veya dosya seçin</h2>
+    <p>Klasör seçimi desteklenmiyorsa HTML dosyasını ve kullandığı dosyaları birlikte seçin.</p>
+    <div class="actions">
+      <button class="button primary" id="folderButton" type="button">Klasör seç</button>
+      <button class="button" id="filesButton" type="button">Dosyaları seç</button>
+    </div>
+    <input id="folderInput" type="file" webkitdirectory directory multiple aria-label="Klasör seç">
+    <input id="filesInput" type="file" multiple accept=".html,.htm,text/html" aria-label="Dosyaları seç">
+    <p class="hint">Klasör seçerken sayfanın bağlı olduğu dosyaların bulunduğu en üst klasörü seçin. Klasör seçimi çalışmıyorsa “Dosyaları seç” ile HTML ve tüm bağımlılıklarını birlikte seçin. Yol bilgisi gelmeyen tarayıcılarda dosya adlarının benzersiz olması gerekir.</p>
+    <div class="status" id="status" role="status" aria-live="polite">Henüz dosya seçilmedi.</div>
+    <div class="choose-page" id="choosePage">
+      <label class="select-label" for="pageSelect">Görüntülenecek HTML sayfası</label>
+      <select id="pageSelect"></select>
+      <button class="button primary open" id="openButton" type="button">Sayfayı görüntüle</button>
+    </div>
+    <p class="note"><strong>Gizlilik:</strong> Seçilen HTML içindeki betikler çalışabilir. Yalnızca güvendiğiniz dosyaları açın. Bu sayfa dosyaları bir sunucuya göndermez.</p>
+  </section>
+
+  <section class="preview-wrap" id="previewWrap" aria-label="Sayfa önizlemesi">
+    <div class="preview-bar" id="previewTitle">Önizleme</div>
+    <iframe class="preview" id="preview" title="Seçilen yerel HTML sayfası" sandbox="allow-scripts allow-forms allow-modals allow-downloads"></iframe>
+  </section>
+  <p class="footer">Tarayıcı güvenliği nedeniyle klasör erişimi yalnızca sizin seçiminizle ve bu sayfa açıkken kullanılabilir.</p>
+</main>
+<script>
+(() => {
+  const folderInput = document.querySelector('#folderInput');
+  const filesInput = document.querySelector('#filesInput');
+  const status = document.querySelector('#status');
+  const choosePage = document.querySelector('#choosePage');
+  const pageSelect = document.querySelector('#pageSelect');
+  const preview = document.querySelector('#preview');
+  const previewWrap = document.querySelector('#previewWrap');
+  const previewTitle = document.querySelector('#previewTitle');
+  let filesByPath = new Map();
+  let objectUrls = new Map();
+  let missingReferences = new Set();
+
+  document.querySelector('#folderButton').addEventListener('click', () => folderInput.click());
+  document.querySelector('#filesButton').addEventListener('click', () => filesInput.click());
+  folderInput.addEventListener('change', () => acceptFiles(folderInput.files));
+  filesInput.addEventListener('change', () => acceptFiles(filesInput.files));
+  document.querySelector('#openButton').addEventListener('click', openPage);
+
+  function normalize(path) {
+    const parts = [];
+    for (const part of path.replace(/\\/g, '/').split('/')) {
+      if (!part || part === '.') continue;
+      if (part === '..') parts.pop(); else parts.push(part);
+    }
+    return parts.join('/');
+  }
+  function acceptFiles(fileList) {
+    if (!fileList || !fileList.length) return;
+    preview.src = 'about:blank';
+    for (const url of objectUrls.values()) URL.revokeObjectURL(url);
+    objectUrls = new Map();
+    filesByPath = new Map();
+    for (const file of Array.from(fileList)) {
+      let path = normalize(file.webkitRelativePath || file.name);
+      if (filesByPath.has(path)) {
+        let n = 2;
+        while (filesByPath.has(`__duplicate_${n}/${file.name}`)) n++;
+        path = `__duplicate_${n}/${file.name}`;
+      }
+      filesByPath.set(path, file);
+      objectUrls.set(path, URL.createObjectURL(file));
+    }
+    const pages = [...filesByPath.keys()].filter(path => /\.html?$/i.test(path)).sort((a,b) => a.localeCompare(b));
+    pageSelect.replaceChildren();
+    pages.forEach(path => {
+      const option = document.createElement('option'); option.value = path; option.textContent = path; pageSelect.append(option);
+    });
+    choosePage.style.display = pages.length ? 'block' : 'none';
+    previewWrap.style.display = 'none';
+    const hasTree = Array.from(fileList).some(file => file.webkitRelativePath && file.webkitRelativePath.includes('/'));
+    status.textContent = `${filesByPath.size} dosya seçildi${pages.length ? ` · ${pages.length} HTML sayfası bulundu` : ' · HTML sayfası bulunamadı'}${hasTree ? '' : ' · Klasör yolları alınamadı; dosya adlarıyla eşleştirme kullanılacak'}.`;
+  }
+
+  function resolveLocal(reference, basePath) {
+    const trimmed = reference.trim();
+    if (!trimmed || /^(?:[a-z][a-z\d+.-]*:|\/\/|#|data:|blob:)/i.test(trimmed)) return null;
+    let parsed;
+    try { parsed = new URL(trimmed, 'https://local.invalid/' + basePath); } catch { return null; }
+    if (parsed.origin !== 'https://local.invalid') return null;
+    let decoded;
+    try { decoded = decodeURIComponent(parsed.pathname.slice(1)); } catch { return null; }
+    const path = normalize(decoded);
+    const direct = objectUrls.get(path);
+    if (direct) return direct + parsed.search + parsed.hash;
+    const match = matchSelectedPath(path);
+    if (match) return objectUrls.get(match) + parsed.search + parsed.hash;
+    missingReferences.add(`${basePath} → ${trimmed}`);
+    return null;
+  }
+  function matchSelectedPath(path) {
+    const keys = [...filesByPath.keys()];
+    let matches = keys.filter(key => key === path || key.endsWith('/' + path));
+    if (matches.length === 1) return matches[0];
+    if (matches.length > 1) return null;
+    const name = path.split('/').pop().toLocaleLowerCase();
+    matches = keys.filter(key => key.split('/').pop().toLocaleLowerCase() === name);
+    return matches.length === 1 ? matches[0] : null;
+  }
+  function rewriteCss(css, basePath) {
+    return css.replace(/url\(\s*(['"]?)(.*?)\1\s*\)/gi, (whole, quote, value) => {
+      const local = resolveLocal(value, basePath);
+      return local ? `url("${local}")` : whole;
+    }).replace(/@import\s+(['"])(.*?)\1/gi, (whole, quote, value) => {
+      const local = resolveLocal(value, basePath);
+      return local ? `@import "${local}"` : whole;
+    });
+  }
+  function rewriteSrcset(value, basePath) {
+    return value.split(',').map(item => {
+      const bits = item.trim().split(/\s+/);
+      const local = resolveLocal(bits[0], basePath);
+      if (local) bits[0] = local;
+      return bits.join(' ');
+    }).join(', ');
+  }
+  async function openPage() {
+    const path = pageSelect.value;
+    const file = filesByPath.get(path);
+    if (!file) return;
+    status.textContent = 'Sayfa hazırlanıyor…';
+    missingReferences = new Set();
+    try {
+      const source = await file.text();
+      const doc = new DOMParser().parseFromString(source, 'text/html');
+      const base = doc.createElement('base');
+      base.href = 'https://local.invalid/';
+      doc.head.prepend(base);
+      doc.querySelectorAll('[src], [href], [poster], [data], [srcset]').forEach(el => {
+        for (const attr of ['src', 'href', 'poster', 'data']) {
+          if (!el.hasAttribute(attr)) continue;
+          // Keep stylesheet hrefs intact until their contents have been rewritten below.
+          if (attr === 'href' && el.matches('link[rel~="stylesheet"]')) continue;
+          const value = el.getAttribute(attr);
+          const local = resolveLocal(value, path);
+          if (local) el.setAttribute(attr, local);
+        }
+        if (el.hasAttribute('srcset')) el.setAttribute('srcset', rewriteSrcset(el.getAttribute('srcset'), path));
+      });
+      doc.querySelectorAll('[style]').forEach(el => el.setAttribute('style', rewriteCss(el.getAttribute('style'), path)));
+      doc.querySelectorAll('style').forEach(el => { el.textContent = rewriteCss(el.textContent, path); });
+      for (const el of doc.querySelectorAll('link[rel~="stylesheet"][href]')) {
+        const cssPath = findPathForUrl(el.getAttribute('href'), path);
+        if (!cssPath) continue;
+        const cssFile = filesByPath.get(cssPath);
+        if (!cssFile) continue;
+        // Use rewritten CSS as a blob so its relative image and font references resolve.
+        const cssText = await cssFile.text();
+        const cssUrl = URL.createObjectURL(new Blob([rewriteCss(cssText, cssPath)], {type:'text/css'}));
+        objectUrls.set('__preview_css__/' + cssPath, cssUrl);
+        el.href = cssUrl;
+      }
+      const html = '<!doctype html>\n' + doc.documentElement.outerHTML;
+      preview.srcdoc = html;
+      previewTitle.textContent = 'Önizleme · ' + path;
+      previewWrap.style.display = 'block';
+      const missing = [...missingReferences];
+      status.textContent = missing.length
+        ? `Sayfa açıldı; ${missing.length} yerel kaynak eşleşmedi: ${missing.slice(0, 4).join(' · ')}${missing.length > 4 ? ' …' : ''}`
+        : 'Sayfa hazır; yerel kaynak yolları eşleşti.';
+      previewWrap.scrollIntoView({behavior:'smooth', block:'start'});
+    } catch (error) {
+      status.textContent = 'Sayfa okunamadı: ' + error.message;
+    }
+  }
+  function findPathForUrl(url, basePath) {
+    if (!url || /^(?:[a-z][a-z\d+.-]*:|\/\/|#|data:|blob:)/i.test(url.trim())) return null;
+    try {
+      const parsed = new URL(url, 'https://local.invalid/' + basePath);
+      let decoded;
+      try { decoded = decodeURIComponent(parsed.pathname.slice(1)); } catch { return null; }
+      const path = normalize(decoded);
+      const match = matchSelectedPath(path);
+      if (!match) missingReferences.add(`${basePath} → ${url}`);
+      return match;
+    } catch { return null; }
+  }
+})();
+</script>
+</body>
+</html>
