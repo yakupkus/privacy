@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>https://munysa.com/yukle/İL-BİS.ipa</string>
+					<string>https://munysa.com/yukle/I%CC%87L-BI%CC%87S.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -37,7 +37,7 @@
 				<key>platform-identifier</key>
 				<string>com.apple.platform.iphoneos</string>
 				<key>title</key>
-				<string>Munysa</string>
+				<string>İL-BİS</string>
 			</dict>
 		</dict>
 	</array>
